@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  food-intel-app:
+    build: .
+    container_name: pakistan_food_pos_intel_app
+    ports:
+      - "5000:5000"
+    environment:
+      - APP_ENV=production
+      - PORT=5000
+      - DB_TYPE=sqlite
+      - DB_PATH=database/food_intel.db
+    volumes:
+      - ./database:/app/database
+      - ./exports:/app/exports
+    restart: unless-stopped

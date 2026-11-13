@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: pakistan-food-pos-intelligence
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn api.server:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: APP_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.12.0
+    disk:
+      name: food-intel-data
+      mountPath: /app/database
+      sizeGB: 5
+

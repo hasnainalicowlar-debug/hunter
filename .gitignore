@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Uncompressed 402MB database (exceeds GitHub 100MB limit)
+database/food_intel.db
+database/food_intel.db-shm
+database/food_intel.db-wal
+
+# Keep the compressed archive under 100MB for automatic cloud extraction
+!database/food_intel.db.zip
+
+# OS files
+.DS_Store
+Thumbs.db
