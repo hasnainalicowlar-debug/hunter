@@ -22,7 +22,14 @@ def get_connection(timeout=60.0):
             print("Database extraction complete!")
     conn = sqlite3.connect(DB_PATH, timeout=timeout)
     conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode = WAL;")
+    try:
+        # Avoid WAL on NFS/PythonAnywhere filesystems where shared memory is unsupported
+        if 'PYTHONANYWHERE_DOMAIN' in os.environ or 'pythonanywhere' in os.path.expanduser('~') or 'jytjty' in os.path.expanduser('~'):
+            conn.execute("PRAGMA journal_mode = DELETE;")
+        else:
+            conn.execute("PRAGMA journal_mode = WAL;")
+    except Exception:
+        conn.execute("PRAGMA journal_mode = DELETE;")
     conn.execute("PRAGMA busy_timeout = 60000;")
     return conn
 
