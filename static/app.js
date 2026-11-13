@@ -789,7 +789,22 @@ const app = {
 
       // Tab 4: POS & Intent
       const intentHtml = (b.buyer_intent && b.buyer_intent.length > 0)
-        ? b.buyer_intent.map(i => `<div class="intent-card" style="margin-top: 8px;"><strong style="color: #b91c1c;">${i.intent_tier}:</strong> ${i.requirement_type}<br><div class="evidence-box">"${i.evidence_summary}"</div><a href="${i.source_url}" target="_blank" style="font-size: 11px; color: #0284c7;">View Source Post</a></div>`).join('')
+        ? b.buyer_intent.map(i => `
+          <div class="intent-card" style="margin-top: 10px; border-left: 3px solid #ef4444; padding: 12px; background: #fff; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: #b91c1c; font-size: 13px;"><i class="fa-solid fa-bullseye"></i> ${i.intent_tier || 'Explicit'}: ${i.requirement_type}</strong>
+              <span class="badge badge-danger">${i.lead_priority || 'P1'}</span>
+            </div>
+            <div class="evidence-box" style="margin: 8px 0; font-size: 12px; font-style: italic; color: #334155; background: #f8fafc; padding: 8px 12px; border-radius: 4px; border: 1px solid #e2e8f0;">
+              "${i.evidence_summary || i.evidence_quote || 'Explicit requirement for restaurant POS software.'}"
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
+              <a href="${i.source_url}" target="_blank" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Live Evidence / Maps</a>
+              ${b.whatsapp_link ? `<a href="${b.whatsapp_link}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp</a>` : ''}
+              ${b.phone ? `<a href="tel:${b.phone}" class="btn btn-outline btn-sm"><i class="fa-solid fa-phone"></i> Direct Call</a>` : ''}
+            </div>
+          </div>
+        `).join('')
         : '<p style="color: #64748b;">No explicit buyer intent posts detected. Opportunity is inferred from operations.</p>';
 
       document.getElementById('modal-tab-pos-content').innerHTML = `
