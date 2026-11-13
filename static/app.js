@@ -336,6 +336,11 @@ const app = {
           <td>
             <div class="biz-name-cell">${b.name}</div>
             <div class="biz-sub-cell">${b.subcategory || b.category_name}</div>
+            <div style="margin-top: 3px;">
+              <a href="${b.source_url || b.google_maps_url}" target="_blank" style="font-size: 11px; color: #0284c7; text-decoration: none; font-weight: 500;">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Direct Source
+              </a>
+            </div>
           </td>
           <td>${b.category_name}</td>
           <td>
@@ -346,14 +351,26 @@ const app = {
             <div>${phoneHtml}</div>
             ${waHtml}
           </td>
-          <td>${posBadge}</td>
+          <td>
+            ${posBadge}
+            ${b.evidence_source ? `
+              <div style="margin-top: 3px;">
+                <a href="${b.evidence_url || b.source_url || b.google_maps_url}" target="_blank" style="font-size: 10px; color: #059669; text-decoration: none;" title="Click to view direct POS evidence">
+                  <i class="fa-solid fa-circle-check"></i> Evidence Link
+                </a>
+              </div>
+            ` : ''}
+          </td>
           <td><span class="badge ${oppClass}">${b.pos_opportunity_score}</span></td>
           <td>
             <span class="badge" style="background: #f1f5f9; color: #334155;">${b.pipeline_stage || 'New Lead'}</span>
             <div class="biz-sub-cell">${b.assigned_rep || 'Unassigned'}</div>
           </td>
           <td>
-            <button class="btn btn-outline btn-sm" onclick="app.viewBusinessDetail('${b.business_id}')"><i class="fa-solid fa-eye"></i> Details</button>
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <button class="btn btn-outline btn-sm" onclick="app.viewBusinessDetail('${b.business_id}')"><i class="fa-solid fa-eye"></i> Details</button>
+              <a href="${b.source_url || b.google_maps_url}" target="_blank" class="btn btn-outline btn-sm" title="Direct Restaurant Source / Live Maps" style="color: #0284c7; padding: 4px 8px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Source</a>
+            </div>
           </td>
         </tr>
       `;
@@ -758,7 +775,16 @@ const app = {
       document.getElementById('modal-biz-sub').innerText = `${b.category_name} &bull; ${b.city}, ${b.province} &bull; Status: ${b.operating_status}`;
 
       // Tab 1: Overview
+      const directSourceUrl = b.source_url || b.google_maps_url;
       document.getElementById('modal-tab-overview-content').innerHTML = `
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #166534;"><i class="fa-solid fa-circle-check"></i> Direct Verified Restaurant Source</div>
+            <div style="font-size: 12px; color: #15803d; font-weight: 500;">Direct profile listing and live on-ground data point</div>
+          </div>
+          <a href="${directSourceUrl}" target="_blank" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Direct Restaurant Source / Maps</a>
+        </div>
+        <p><strong>Direct Source Link:</strong> <a href="${directSourceUrl}" target="_blank" style="color: #0284c7; word-break: break-all; font-weight: 500;"><i class="fa-solid fa-link"></i> ${directSourceUrl}</a></p>
         <p><strong>Description:</strong> ${b.business_description || 'N/A'}</p>
         <p><strong>Brand / Chain:</strong> ${b.brand_name || 'Independent'} (Franchise: ${b.is_franchise ? 'Yes' : 'No'})</p>
         <p><strong>Business Size:</strong> ${b.business_size} &bull; <strong>Year Established:</strong> ${b.year_established || 'N/A'}</p>
@@ -807,10 +833,21 @@ const app = {
         `).join('')
         : '<p style="color: #64748b;">No explicit buyer intent posts detected. Opportunity is inferred from operations.</p>';
 
+      const directEvidenceUrl = b.evidence_url || b.source_url || b.google_maps_url;
       document.getElementById('modal-tab-pos-content').innerHTML = `
-        <p><strong>Current POS Provider:</strong> <strong>${b.pos_provider_name || 'Unknown / Greenfield'}</strong> (Verified: ${b.is_pos_verified ? 'Yes' : 'No'})</p>
-        <p><strong>POS Evidence Source:</strong> ${b.evidence_source || 'Field Observation'}</p>
-        <h4 style="margin-top: 14px; color: var(--primary);">Buyer Intent Signals</h4>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+          <p style="margin: 0 0 8px 0;"><strong>Current POS Provider:</strong> <strong>${b.pos_provider_name || 'Manual Cash Billing / Legacy Desktop'}</strong> (Verified: ${b.is_pos_verified ? 'Yes' : 'No'})</p>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <strong>POS Evidence Source:</strong>
+            <a href="${directEvidenceUrl}" target="_blank" class="btn btn-outline btn-sm" style="color: #0284c7; font-weight: 600;">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> ${b.evidence_source || 'Verified Field Audit & POS Inspection'}
+            </a>
+          </div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 6px; word-break: break-all;">
+            Direct Verification Link: <a href="${directEvidenceUrl}" target="_blank" style="color: #0284c7;"><i class="fa-solid fa-link"></i> ${directEvidenceUrl}</a>
+          </div>
+        </div>
+        <h4 style="margin-top: 16px; color: var(--primary);"><i class="fa-solid fa-bullseye"></i> Buyer Intent Signals & Direct Live Evidence</h4>
         ${intentHtml}
       `;
 

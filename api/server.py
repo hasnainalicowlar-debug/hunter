@@ -18,6 +18,14 @@ from collector.hunter.scheduler import hunter_scheduler
 
 app = Flask(__name__, static_folder='../static', static_url_path='/static')
 app.config['JSON_SORT_KEYS'] = False
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+@app.after_request
+def add_cache_headers(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 # Automatically start 24/7 background scheduler on application boot
 try:
@@ -225,12 +233,12 @@ def get_businesses():
         SELECT 
             b.business_id, b.name, b.brand_name, b.category_name, b.subcategory,
             b.operating_status, b.business_size, b.verification_status, b.data_confidence,
-            b.pos_opportunity_score, b.pos_opportunity_reasons, b.lead_priority,
+            b.pos_opportunity_score, b.pos_opportunity_reasons, b.lead_priority, b.source_url,
             l.province, l.district, l.city, l.area, l.market, l.full_address,
             l.latitude, l.longitude, l.google_maps_url,
             c.phone, c.whatsapp, c.whatsapp_status, c.whatsapp_link, c.email, c.website,
             m.price_range, m.dine_in, m.takeaway, m.delivery,
-            e.pos_provider_name, e.is_pos_verified,
+            e.pos_provider_name, e.is_pos_verified, e.evidence_source, e.evidence_url,
             s.pipeline_stage, s.assigned_rep, s.notes
         FROM businesses b
         LEFT JOIN locations l ON b.business_id = l.business_id
@@ -276,7 +284,7 @@ def get_business_detail(business_id):
                c.email, c.support_email, c.website, c.contact_page_url, c.online_ordering_url, c.menu_url,
                m.price_range, m.cuisines, m.opening_hours, m.closing_hours, m.dine_in, m.takeaway, m.delivery,
                m.table_reservations, m.online_ordering, m.seating_capacity, m.number_of_employees,
-               e.pos_provider_name, e.is_pos_verified, e.evidence_source, e.notes as pos_notes,
+               e.pos_provider_name, e.is_pos_verified, e.evidence_source, e.evidence_url, e.notes as pos_notes,
                s.lead_id, s.pipeline_stage, s.assigned_rep, s.last_contact_date, s.next_followup_date, s.notes as sales_notes
         FROM businesses b
         LEFT JOIN locations l ON b.business_id = l.business_id
